@@ -26,6 +26,16 @@ else()
 	message("Must Build from within a valid Git repository to get/update submodules")
 endif()
 
+# Library Setup
+message("Library setup")
+
+# GLFW
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+add_subdirectory(${EXTERNAL_REPO_DIRECTORY}/glfw)
+include_directories(${EXTERNAL_REPO_DIRECTORY}/glfw/include)
+
 # System Configuration
 message("Building on ${CMAKE_SYSTEM_NAME} system")
 if(UNIX)
@@ -38,3 +48,5 @@ endif()
 
 # Make Executables
 add_executable(cmake_hello src/main.cpp)
+
+target_link_libraries(cmake_hello glfw)
