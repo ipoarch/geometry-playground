@@ -12,18 +12,15 @@ set(EXTERNAL_REPO_DIRECTORY ${PROJECT_SOURCE_DIR}/extern)
 # Submodule Setup
 find_package(Git QUIET)
 if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
-	if(NOT EXISTS EXTERNAL_REPO_DIRECTORY)
-		message("Submodule init")
-
-	#	execute_process(COMMAND ${GIT_EXECUTABLE} submodule add https://github.com/glfw/glfw.git -b 3.3-stable
-	#		WORKING_DIRECTORY ${EXTERNAL_REPO_DIRECTORY}))
-	endif()
 	if(UPDATE_SUBMODULES)
 		message("Submodule update")
-
-	#	execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive 
-	#		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-	#		RESULT_VARIABLE GIT_SUBMODULE_RESULT))
+ 
+		execute_process(COMMAND git submodule update --init --recursive 
+			WORKING_DIRECTORY ${EXTERNAL_REPO_DIRECTORY}/glfw
+			RESULT_VARIABLE GIT_SUBMODULE_RESULT)
+		if(NOT GIT_SUBMODULE_RESULT EQUAL "0")
+			message("Submodule update failed with code: ${GIT_SUBMODULE_RESULT}")
+		endif()
 	endif()
 else()
 	message("Must Build from within a valid Git repository to get/update submodules")
