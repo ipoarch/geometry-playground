@@ -33,3 +33,5 @@
 
 # Additional Exclusions
 build/*
+out/*
+.vs/*
