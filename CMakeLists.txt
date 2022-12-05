@@ -1,3 +1,8 @@
+# CMake Req
+cmake_minimum_required(VERSION 3.22)
+cmake_policy(SET CMP0003 NEW)
+cmake_policy(SET CMP0048 NEW)
+
 # Instantiate Project
 project(geometry-playground)
 
@@ -10,24 +15,27 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(EXTERNAL_REPO_DIRECTORY ${PROJECT_SOURCE_DIR}/extern)
 
 # Submodule Setup
-find_package(Git QUIET)
-if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
-	if(UPDATE_SUBMODULES)
-		message("Submodule update")
- 
+if(UPDATE_SUBMODULES)
+	message("Submodule update")
+
+	find_package(Git)
+	if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
 		execute_process(COMMAND git submodule update --init --recursive 
 			WORKING_DIRECTORY ${EXTERNAL_REPO_DIRECTORY}/glfw
 			RESULT_VARIABLE GIT_SUBMODULE_RESULT)
 		if(NOT GIT_SUBMODULE_RESULT EQUAL "0")
 			message("Submodule update failed with code: ${GIT_SUBMODULE_RESULT}")
 		endif()
+	else()
+		message("Must Build from within a valid Git repository to get/update submodules")
 	endif()
-else()
-	message("Must Build from within a valid Git repository to get/update submodules")
 endif()
 
 # Library Setup
 message("Library setup")
+
+# Vulkan
+find_package(Vulkan REQUIRED)
 
 # GLFW
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
@@ -49,4 +57,4 @@ endif()
 # Make Executables
 add_executable(cmake_hello src/main.cpp)
 
-target_link_libraries(cmake_hello glfw)
+target_link_libraries(cmake_hello glfw ${Vulkan_LIBRARY})
