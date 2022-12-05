@@ -15,12 +15,13 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(EXTERNAL_REPO_DIRECTORY ${PROJECT_SOURCE_DIR}/extern)
 
 # Submodule Setup
+set(UPDATE_SUBMODULES 1)
 if(UPDATE_SUBMODULES)
 	message("Submodule update")
 
 	find_package(Git REQUIRED)
 	if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
-		execute_process(COMMAND git submodule update --init --recursive 
+		execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive 
 			WORKING_DIRECTORY ${EXTERNAL_REPO_DIRECTORY}/glfw
 			RESULT_VARIABLE GIT_SUBMODULE_RESULT)
 		if(NOT GIT_SUBMODULE_RESULT EQUAL "0")
