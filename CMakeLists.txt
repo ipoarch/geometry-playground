@@ -18,7 +18,7 @@ set(EXTERNAL_REPO_DIRECTORY ${PROJECT_SOURCE_DIR}/extern)
 if(UPDATE_SUBMODULES)
 	message("Submodule update")
 
-	find_package(Git)
+	find_package(Git REQUIRED)
 	if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
 		execute_process(COMMAND git submodule update --init --recursive 
 			WORKING_DIRECTORY ${EXTERNAL_REPO_DIRECTORY}/glfw
@@ -35,6 +35,11 @@ endif()
 message("Library setup")
 
 # Vulkan
+if(MSVC OR WIN32)
+	set(VULKAN_INSTALL_DIR "C:/VulkanSDK/1.3.231.1")
+	set(ENV{VULKAN_SDK} "${VULKAN_INSTALL_DIR}")
+	include_directories("${VULKAN_INSTALL_DIR}/Include")
+endif()
 find_package(Vulkan REQUIRED)
 
 # GLFW
@@ -49,7 +54,7 @@ message("Building on ${CMAKE_SYSTEM_NAME} system")
 if(UNIX)
 	add_definitions(-DLINUX_BUILD)
 	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/linux)
-elseif(WIN32)
+elseif(MSVC OR WIN32)
 	add_definitions(-DWINDOWS_BUILD)
 	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/win)
 endif()
@@ -57,4 +62,4 @@ endif()
 # Make Executables
 add_executable(cmake_hello src/main.cpp)
 
-target_link_libraries(cmake_hello glfw ${Vulkan_LIBRARY})
+target_link_libraries(cmake_hello glfw ${Vulkan_LIBRARIES})
